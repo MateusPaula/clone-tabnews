@@ -1,0 +1,5 @@
+root = true
+
+[*] # especifica que é para todos os arquivos (pode definir só pros .js)
+indent_style = space
+indent_size = 2 # convenção javascript
