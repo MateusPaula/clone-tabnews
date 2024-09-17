@@ -1,18 +1,31 @@
 import database from "infra/database.js";
 
 async function status(request, response) {
-  const versionResult = await database.query("SELECT version()");
-  const connectionsResult = await database.query(
-    "SELECT count(distinct(numbackends)) FROM pg_stat_database"
+  const databaseVersionResult = await database.query("SHOW server_version;");
+  const databaseVersionValue = databaseVersionResult.rows[0].server_version;
+
+  const databaseOpenedConnectionsResult = await database.query(
+    "SELECT count(*)::int FROM pg_stat_activity WHERE datname = 'local_db';"
   );
-  const maxConnectionsResult = await database.query("SHOW max_connections");
+  const databaseOpenedConnectionsValue =
+    databaseOpenedConnectionsResult.rows[0].count;
+
+  const databaseMaxConnectionsResult = await database.query(
+    "SHOW max_connections;"
+  );
+  const databaseMaxConnectionsValue =
+    databaseMaxConnectionsResult.rows[0].max_connections;
   const updatedAt = new Date().toISOString();
 
   response.status(200).json({
     updated_at: updatedAt,
-    version: versionResult.rows[0].version,
-    max_connections: maxConnectionsResult.rows[0].max_connections,
-    connections: connectionsResult.rows[0].count,
+    dependencies: {
+      database: {
+        version: databaseVersionValue,
+        max_connections: databaseMaxConnectionsValue,
+        connections: databaseOpenedConnectionsValue,
+      },
+    },
   });
 }
 
