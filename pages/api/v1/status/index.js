@@ -4,9 +4,13 @@ async function status(request, response) {
   const databaseVersionResult = await database.query("SHOW server_version;");
   const databaseVersionValue = databaseVersionResult.rows[0].server_version;
 
-  const databaseOpenedConnectionsResult = await database.query(
-    "SELECT count(*)::int FROM pg_stat_activity WHERE datname = 'local_db';"
-  );
+  const databaseName = process.env.POSTGRES_DB;
+
+  const databaseOpenedConnectionsResult = await database.query({
+    text: `SELECT count(*)::int FROM pg_stat_activity WHERE datname = $1;`,
+    values: [databaseName],
+  });
+
   const databaseOpenedConnectionsValue =
     databaseOpenedConnectionsResult.rows[0].count;
 
