@@ -18,7 +18,7 @@ async function status(request, response) {
     "SHOW max_connections;"
   );
   const databaseMaxConnectionsValue =
-    databaseMaxConnectionsResult.rows[0].max_connections;
+    parseInt(databaseMaxConnectionsResult.rows[0].max_connections);
   const updatedAt = new Date().toISOString();
 
   response.status(200).json({
