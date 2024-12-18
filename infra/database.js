@@ -28,7 +28,6 @@ export default {
 
 function getSSLValues() {
   if (process.env.POSTGRES_CA) {
-    console.log("entrei");
     return {
       ca: process.env.POSTGRES_CA,
     };
